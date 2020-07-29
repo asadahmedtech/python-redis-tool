@@ -2,7 +2,7 @@
 import argparse
 import sys
 
-from cli import reshard, add_node
+from cli import reshard, add_node, remove_node
 import logging
 
 
@@ -50,6 +50,20 @@ class CommandParser(object):
         options, args = parser.parse_known_args()
         logging.debug('%s have been passed to add_node function', options)
         add_node.add_node_to_cluster(self.source, options.target, options.role)
+
+    def remove_node(self):
+        parser = argparse.ArgumentParser(
+            description='This command will remove the given target node(s) to the cluster. It simply '
+                        'executes add_node command from redis-cli multiple times.',
+            usage='redis_tool.py [--source] [--d] remove_node -role <master|slave> -target <node_address...>')
+        parser.add_argument('-r', '--role', required=True, choices=['master', 'slave'],
+                            help='Role of the node in the cluster. Could be either master or slave')
+
+        parser.add_argument('-t', '--target', nargs='+', required=True,
+                            help='Address of the node(s) you would like to remove to the cluster.')
+        options, args = parser.parse_known_args()
+        logging.debug('%s have been passed to add_node function', options)
+        remove_node.remove_node_from_cluster(self.source, options.target, options.role)
 
     def reshard(self):
         parser = argparse.ArgumentParser(
